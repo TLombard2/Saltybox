@@ -16,7 +16,7 @@ log4js.configure({
 //Check type of log and print
 	switch(logType) {
 		case "info":
-		    fileLogger.info(str);
+		    //fileLogger.info(str);
 		    console.log(str);
 		break;
 		case "error":
