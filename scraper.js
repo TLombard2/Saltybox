@@ -208,7 +208,6 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 		if(err) {
 			log.message(err.message, "error");
 		} else {
-			//let matchId = parseInt(rows[0]['COUNT(*)']) + 1;
 			let matchTime = new Date().toLocaleString(); 
 			redBets = parseInt(redBets.replace(/,/g, ""));
 			blueBets = parseInt(blueBets.replace(/,/g, ""));
@@ -224,25 +223,38 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 }
 
 function addFavor(redFighter, blueFighter, redBets, blueBets) {
-	redBets = parseInt(redBets.replace(/,/g, "")); //Removes commas from number strings and turns them into integers
+	redBets = parseInt(redBets.replace(/,/g, ""));
 	blueBets = parseInt(blueBets.replace(/,/g, ""));
 	if (redBets > blueBets) {
-		db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [redFighter], function(err) {
-			if(err) {
-				log.message('13: ' + err.message, "error");
-			} else {
-				log.message(redFighter + ' was favored!', "info");
-			}
-		});
+		let matchOdds = (Math.round(((redBets/blueBets) * 10)) / 10);
+		log.message(matchOdds, "debug");
+		if (matchOdds >= 1.4) {
+			db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [redFighter], function(err) {
+				if(err) {
+					log.message('13: ' + err.message, "error");
+				} else {
+					log.message(redFighter + ' was favored!', "info");
+				}
+			});
+		} else {
+			log.message('Favor is too close to call!', "info");
+		}
 	} else if (blueBets > redBets) {
-		db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [blueFighter], function(err) {
-			if(err) {
-				log.message('14: ' + err.message, "error");
-			} else {
-				log.message(blueFighter + ' was favored!', "info");
-			}
-		});
-	} else {
-		log.message('Fighter\'s were equally favored!', "info");
+		let matchOdds = (Math.round(((blueBets/redBets) * 10)) / 10);
+		log.message(matchOdds, "debug");
+		if (matchOdds >= 1.4) {
+			db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [blueFighter], function(err) {
+				if(err) {
+					log.message('14: ' + err.message, "error");
+				} else {
+					log.message(blueFighter + ' was favored!', "info");
+				}
+			});
+		} else {
+			log.message('Favor is too close to call!', "info");
+		}
 	}
 }
+
+	
+
