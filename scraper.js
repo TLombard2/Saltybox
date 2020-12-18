@@ -227,7 +227,6 @@ function addFavor(redFighter, blueFighter, redBets, blueBets) {
 	blueBets = parseInt(blueBets.replace(/,/g, ""));
 	if (redBets > blueBets) {
 		let matchOdds = (Math.round(((redBets/blueBets) * 10)) / 10);
-		log.message(matchOdds, "debug");
 		if (matchOdds >= 1.4) {
 			db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [redFighter], function(err) {
 				if(err) {
@@ -241,7 +240,6 @@ function addFavor(redFighter, blueFighter, redBets, blueBets) {
 		}
 	} else if (blueBets > redBets) {
 		let matchOdds = (Math.round(((blueBets/redBets) * 10)) / 10);
-		log.message(matchOdds, "debug");
 		if (matchOdds >= 1.4) {
 			db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [blueFighter], function(err) {
 				if(err) {
