@@ -5,7 +5,7 @@ const parseJson = require('parse-json');
 
 var db = new sqlite3.Database('saltydb.db');
 db.run('CREATE TABLE IF NOT EXISTS fighterTable (name text, wins integer DEFAULT 0, losses integer DEFAULT 0, matches integer DEFAULT 0, tournamentMatchWins integer DEFAULT 0,\
-	tournamentMatchLosses integer DEFAULT 0, tournamentMatches integer DEFAULT 0, tournamentFinalWins integer DEFAULT 0, matchmakingBets integer DEFAULT 0)');
+	tournamentMatchLosses integer DEFAULT 0, tournamentMatches integer DEFAULT 0, tournamentFinalWins integer DEFAULT 0, favor integer DEFAULT 0)');
 db.run('CREATE TABLE IF NOT EXISTS matchTable (redFighter text, blueFighter text, redBets integer DEFAULT 0,blueBets integer DEFAULT 0, matchWinner text, matchType text, matchTime text)');
 
 var fightData = '';
@@ -51,7 +51,7 @@ function dataObserver() {
 				setTimeout(function() { //Allows checkDatabase to complete before continuing
 					addMatch(redFighter, blueFighter, redBets, blueBets, redFighter);
 					addMatchResults(redFighter, blueFighter);
-					addBets(redFighter, blueFighter, redBets, blueBets);
+					addFavor(redFighter, blueFighter, redBets, blueBets);
 				}, 100);
 				break;
 			case 'blueWon':
@@ -59,7 +59,7 @@ function dataObserver() {
 				setTimeout(function() {
 					addMatch(redFighter, blueFighter, redBets, blueBets, blueFighter);
 					addMatchResults(blueFighter, redFighter);
-					addBets(redFighter, blueFighter, redBets, blueBets);
+					addFavor(redFighter, blueFighter, redBets, blueBets);
 				}, 100);
 				break;
 			default:
@@ -208,7 +208,6 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 		if(err) {
 			log.message(err.message, "error");
 		} else {
-			//let matchId = parseInt(rows[0]['COUNT(*)']) + 1;
 			let matchTime = new Date().toLocaleString(); 
 			redBets = parseInt(redBets.replace(/,/g, ""));
 			blueBets = parseInt(blueBets.replace(/,/g, ""));
@@ -223,21 +222,37 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 	});	
 }
 
-function addBets(redFighter, blueFighter, redBets, blueBets) {
-	redBets = parseInt(redBets.replace(/,/g, "")); //Removes commas from number strings and turns them into integers
+function addFavor(redFighter, blueFighter, redBets, blueBets) {
+	redBets = parseInt(redBets.replace(/,/g, ""));
 	blueBets = parseInt(blueBets.replace(/,/g, ""));
-	db.run('UPDATE fighterTable SET matchmakingBets = matchmakingBets + ? WHERE name = ?', [redBets, redFighter], function(err) {
-		if(err) {
-			log.message('13: ' + err.message, "error");
+	if (redBets > blueBets) {
+		let matchOdds = (Math.round(((redBets/blueBets) * 10)) / 10);
+		if (matchOdds >= 1.4) {
+			db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [redFighter], function(err) {
+				if(err) {
+					log.message('13: ' + err.message, "error");
+				} else {
+					log.message(redFighter + ' was favored!', "info");
+				}
+			});
 		} else {
-			log.message('$' + redBets + ' was bet on ' + redFighter, "info");
+			log.message('Favor is too close to call!', "info");
 		}
-	});
-	db.run('UPDATE fighterTable SET matchmakingBets = matchmakingBets + ? WHERE name = ?', [blueBets, blueFighter], function(err) {
-		if(err) {
-			log.message('14: ' + err.message, "error");
+	} else if (blueBets > redBets) {
+		let matchOdds = (Math.round(((blueBets/redBets) * 10)) / 10);
+		if (matchOdds >= 1.4) {
+			db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [blueFighter], function(err) {
+				if(err) {
+					log.message('14: ' + err.message, "error");
+				} else {
+					log.message(blueFighter + ' was favored!', "info");
+				}
+			});
 		} else {
-			log.message('$' + blueBets + ' was bet on ' + blueFighter, "info");
+			log.message('Favor is too close to call!', "info");
 		}
-	});
+	}
 }
+
+	
+
