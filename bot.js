@@ -266,7 +266,6 @@ function whenRedWins() {
             });
         });
     }
-    predictedWinner = 3;
 }
 
 function whenBlueWins() {
@@ -317,7 +316,6 @@ function whenBlueWins() {
             }
         });
     };
-    predictedWinner = 3;
 }
 
 
