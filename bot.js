@@ -50,9 +50,11 @@ function dataObserver() {
     setMatchStatus();
     if (matchStatus != oldStatus && matchType != 'Exhibition') { //Exhibitions are not tracked.
         oldStatus = matchStatus;
+        let redFighter = fightData.p1name;
+		let blueFighter = fightData.p2name;
         switch (matchStatus) {
             case 'open':
-                predictedWinner = Math.round(Math.random());
+                predictWinner(redFighter, blueFighter);
                 break;
             case 'locked':
                 break;
@@ -69,14 +71,160 @@ function dataObserver() {
     }
 }
 
+function predictWinner(redName, blueName) {
+    //Check to see if the fighters have fought before
+    //Get data from each fighter from database
+    //Compare w/l ratio, tournament w/l ratio, tournament wins, and favor
+    db.all('SELECT matchWinner FROM matchTable WHERE redFighter = ? AND blueFighter = ? OR redFighter = ? AND blueFighter = ?', [redName, blueName, blueName, redName], 
+    function(err,rows){
+        if(err) {
+            log.message('3: ' + err.message, "error");
+        } else {
+            log.message(rows[0], "debug");
+            let redBeatBlue = rows.filter(function() {return redName}).length;
+            let blueBeatRed = rows.filter(function() {return blueName}).length;
+            log.message(redBeatBlue, "debug");
+            log.message(blueBeatRed, "debug");
+            if (redBeatBlue > blueBeatRed) {
+                predictedWinner = 0;
+            } else if (blueBeatRed > redBeatBlue) {
+                predictedWinner = 1;
+            }
+        }
+    });
+    if (predictedWinner == 3) { //Checks to make sure predictedWinner wasn't set in the above function.
+        db.all('SELECT * FROM fighterTable WHERE name IN (?, ?)', [redName, blueName], function(err, rows){
+            if(err) {
+                log.message('3: ' + err.message, "error");
+            } else if(typeof rows[0] == 'undefined' || typeof rows[1] == 'undefined') {
+                predictedWinner = Math.round(Math.random());
+                log.message('Predicted winner is ' + predictedWinner, "info");
+            } else {
+                let redWins = rows[0]['wins'];
+                let redLosses = rows[0]['losses'];
+                let redTotalMatches = rows[0]['matches'];
+                let redTournamentMatchWins = rows[0]['tournamentMatchWins'];
+                let redTournamentMatchLosses = rows[0]['tournamentMatchLosses'];
+                let redTotalTournamentMatches = rows[0]['tournamentMatches'];
+                let redTournamentFinalWins = rows[0]['tournamentFinalWins'];
+                let redFavor = rows[0]['favor'];
+                let redPoints = 0;
+                let redWinRatio = 0;
+                let redTournamentWinRatio = 0;
+
+                if (redTotalMatches > 0) {
+                    if (redLosses > 0) {
+                        redWinRatio = redWins/redLosses;
+                    } else {
+                        redWinRatio = 'undefeated'
+                    }
+                }
+                if (redTotalTournamentMatches > 0) {
+                    if (redTournamentMatchLosses > 0) {
+                        redTournamentWinRatio = redTournamentMatchWins/redTournamentMatchLosses;
+                    } else {
+                        redTournamentWinRatio = 'undefeated'
+                    }
+                }
+                let blueWins = rows[1]['wins'];
+                let blueLosses = rows[1]['losses'];
+                let blueTotalMatches = rows[1]['matches'];
+                let blueTournamentMatchWins = rows[1]['tournamentMatchWins'];
+                let blueTournamentMatchLosses = rows[1]['tournamentMatchLosses'];
+                let blueTotalTournamentMatches = rows[1]['tournamentMatches'];
+                let blueTournamentFinalWins = rows[1]['tournamentFinalWins'];
+                let blueFavor = rows[1]['favor'];
+                let bluePoints = 0;
+                let blueWinRatio = 0;
+                let blueTournamentWinRatio = 0;
+
+                if (blueTotalMatches > 0) {
+                    if (blueLosses > 0) {
+                        blueWinRatio = blueWins/blueLosses;
+                    } else {
+                        blueWinRatio = 'undefeated'
+                    }
+                }
+                if (blueTotalTournamentMatches > 0) {
+                    if (blueTournamentMatchLosses > 0) {
+                        blueTournamentWinRatio = blueTournamentMatchWins/blueTournamentMatchLosses;
+                    } else {
+                        blueTournamentWinRatio = 'undefeated'
+                    }
+                }
+
+                if (redWinRatio == 'undefeated' || blueWinRatio == 'undefeated') {
+                    if (redWinRatio == 'undefeated' && blueWinRatio == 'undefeated') {
+                        redPoints = redPoints + 1;
+                        bluePoints = bluePoints + 1;
+                    } else if (redWinRatio == 'undefeated') {
+                        redPoints = redPoints + 1;
+                    } else if (blueWinRatio == 'undefeated') {
+                        bluePoints - bluePoints + 1;
+                    }
+                } else if (redWinRatio > blueWinRatio) {
+                    redPoints = redPoints + 1;
+                } else if (blueWinRatio > redWinRatio) {
+                    bluePoints = bluePoints +1;
+                } else if (redWinRatio == blueWinRatio) {
+                    redPoints = redPoints + 1;
+                    bluePoints = bluePoints + 1;
+                }
+
+                if (redTournamentWinRatio == 'undefeated' || blueTournamentWinRatio == 'undefeated') {
+                    if (redTournamentWinRatio == 'undefeated' && blueTournamentWinRatio == 'undefeated') {
+                        redPoints = redPoints + 1;
+                        bluePoints = bluePoints + 1;
+                    } else if (redTournamentWinRatio == 'undefeated') {
+                        redPoints = redPoints + 1;
+                    } else if (blueTournamentWinRatio == 'undefeated') {
+                        bluePoints - bluePoints + 1;
+                    }
+                } else if (redTournamentWinRatio > blueTournamentWinRatio) {
+                    redPoints = redPoints + 1;
+                } else if (blueTournamentWinRatio > redTournamentWinRatio) {
+                    bluePoints = bluePoints +1;
+                } else if (redTournamentWinRatio == blueTournamentWinRatio) {
+                    redPoints = redPoints + 1;
+                    bluePoints = bluePoints + 1;
+                }
+
+                if (redTournamentFinalWins > blueTournamentFinalWins) {
+                    redPoints = redPoints + 3;
+                } else if (blueTournamentFinalWins > redTournamentFinalWins) {
+                    bluePoints = bluePoints + 3
+                } else if (redTournamentFinalWins == blueTournamentFinalWins) {
+                    redPoints = redPoints + 3;
+                    bluePoints = bluePoints + 3;
+                }
+
+                if (redFavor > blueFavor) {
+                    redPoints = redPoints + 2;
+                } else if (blueFavor > redFavor) {
+                    bluePoints = bluePoints + 2
+                } else if (redFavor == blueFavor) {
+                    redPoints = redPoints + 2;
+                    bluePoints = bluePoints + 2;
+                }
+
+                if (redPoints > bluePoints) {
+                    predictedWinner = 0;
+                } else if (bluePoints > redPoints) {
+                    predictedWinner = 1;
+                } else if (redPoints == bluePoints) {
+                    predictedWinner = Math.round(Math.random());
+                }
+            }
+        });
+    }
+    log.message('Predicted winner is ' + predictedWinner, "info");
+}
+
 function whenRedWins() {
-    log.message(predictedWinner, "info");
     if (predictedWinner != 3) {
         db.run('UPDATE botRnd SET totalPredictions = totalPredictions + 1 WHERE name = ?', ['Prediction History'], function (err) {
             if (err) {
                 log.message('2: ' + err.message, "error");
-            } else {
-                log.message('Prediction History updated', "info");
             }
             if (predictedWinner == 0) {
                 db.run('UPDATE botRnd SET correctPredictions = correctPredictions + 1 WHERE name = ?', ['Prediction History'], function (err) {
@@ -89,8 +237,6 @@ function whenRedWins() {
                 db.run('INSERT INTO botRnd(correctPredictions) VALUES (?)', ['Yes'], function (err) {
                     if (err) {
                         log.message('5: ' + err.message, "error");
-                    } else {
-                        log.message('Added new prediction row!', "info");
                     }
                 });
             } else if (predictedWinner != 3) {
@@ -98,13 +244,10 @@ function whenRedWins() {
                 db.run('INSERT INTO botRnd(correctPredictions) VALUES (?)', ['No'], function (err) {
                     if (err) {
                         log.message('5: ' + err.message, "error");
-                    } else {
-                        log.message('Added new prediction row!', "info");
                     }
                 });
             }
             db.all('SELECT COUNT(*) FROM botRnd', [], function (err, rows) {
-                log.message(rows[0]['COUNT(*)'], "debug");
                 if (err) {
                     log.message('4: ' + err.message, "error");
                 } else if (rows[0]['COUNT(*)'] == 102) {
@@ -112,12 +255,9 @@ function whenRedWins() {
                         if (err) {
                             log.message('5: ' + err.message, "error");
                         } else {
-                            log.message('Row deleted', "debug");
                             db.run('UPDATE botRnd SET rowid = rowid - 1 WHERE rowid > 1', [], function (err) {
                                 if (err) {
                                     log.message('5: ' + err.message, "error");
-                                } else {
-                                    log.message('RowId has been reset!', "debug");
                                 }
                             });
                         }
@@ -126,16 +266,14 @@ function whenRedWins() {
             });
         });
     }
+    predictedWinner = 3;
 }
 
 function whenBlueWins() {
-    log.message(predictedWinner, "info");
     if (predictedWinner != 3) {
         db.run('UPDATE botRnd SET totalPredictions = totalPredictions + 1 WHERE name = ?', ['Prediction History'], function (err) {
             if (err) {
                 log.message('2: ' + err.message, "error");
-            } else {
-                log.message('Prediction History updated', "info");
             }
         });
         if (predictedWinner == 1) {
@@ -149,8 +287,6 @@ function whenBlueWins() {
             db.run('INSERT INTO botRnd(correctPredictions) VALUES (?)', ['Yes'], function (err) {
                 if (err) {
                     log.message('5: ' + err.message, "error");
-                } else {
-                    log.message('Added new prediction row!', "info");
                 }
             });
 
@@ -159,8 +295,6 @@ function whenBlueWins() {
             db.run('INSERT INTO botRnd(correctPredictions) VALUES (?)', ['No'], function (err) {
                 if (err) {
                     log.message('5: ' + err.message, "error");
-                } else {
-                    log.message('Added new prediction row!', "info");
                 }
             });
         }
@@ -173,12 +307,9 @@ function whenBlueWins() {
                     if (err) {
                         log.message('5: ' + err.message, "error");
                     } else {
-                        log.message('Row deleted', "debug");
                         db.run('UPDATE botRnd SET rowid = rowid - 1 WHERE rowid > 1', [], function (err) {
                             if (err) {
                                 log.message('5: ' + err.message, "error");
-                            } else {
-                                log.message('RowId has been reset!', "debug");
                             }
                         });
                     }
@@ -186,6 +317,7 @@ function whenBlueWins() {
             }
         });
     };
+    predictedWinner = 3;
 }
 
 
