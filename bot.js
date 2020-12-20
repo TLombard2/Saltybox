@@ -75,6 +75,7 @@ function predictWinner(redName, blueName) {
     //Check to see if the fighters have fought before
     //Get data from each fighter from database
     //Compare w/l ratio, tournament w/l ratio, tournament wins, and favor
+    let botHasPredicted = false;
     db.all('SELECT matchWinner FROM matchTable WHERE redFighter = ? AND blueFighter = ? OR redFighter = ? AND blueFighter = ?', [redName, blueName, blueName, redName], 
     function(err,rows){
         if(err) {
@@ -87,17 +88,20 @@ function predictWinner(redName, blueName) {
             log.message(blueBeatRed, "debug");
             if (redBeatBlue > blueBeatRed) {
                 predictedWinner = 0;
+                botHasPredicted = true;
             } else if (blueBeatRed > redBeatBlue) {
                 predictedWinner = 1;
+                botHasPredicted = true;
             }
         }
     });
-    if (predictedWinner == 3) { //Checks to make sure predictedWinner wasn't set in the above function.
+    if (botHasPredicted == false) { //Checks to make sure predictedWinner wasn't set in the above function.
         db.all('SELECT * FROM fighterTable WHERE name IN (?, ?)', [redName, blueName], function(err, rows){
             if(err) {
                 log.message('3: ' + err.message, "error");
             } else if(typeof rows[0] == 'undefined' || typeof rows[1] == 'undefined') {
                 predictedWinner = Math.round(Math.random());
+                botHasPredicted = true;
                 log.message('Predicted winner is ' + predictedWinner, "info");
             } else {
                 let redWins = rows[0]['wins'];
@@ -209,10 +213,13 @@ function predictWinner(redName, blueName) {
 
                 if (redPoints > bluePoints) {
                     predictedWinner = 0;
+                    botHasPredicted = true;
                 } else if (bluePoints > redPoints) {
                     predictedWinner = 1;
+                    botHasPredicted = true;
                 } else if (redPoints == bluePoints) {
                     predictedWinner = Math.round(Math.random());
+                    botHasPredicted = true;
                 }
             }
         });
