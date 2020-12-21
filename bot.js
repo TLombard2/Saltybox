@@ -102,7 +102,7 @@ function predictWinner(redName, blueName) {
             } else if(typeof rows[0] == 'undefined' || typeof rows[1] == 'undefined') {
                 predictedWinner = Math.round(Math.random());
                 botHasPredicted = true;
-                log.message('Predicted winner is ' + predictedWinner, "info");
+                log.message('Randomly predicted winner is ' + predictedWinner, "info");
             } else {
                 let redWins = rows[0]['wins'];
                 let redLosses = rows[0]['losses'];
@@ -214,17 +214,19 @@ function predictWinner(redName, blueName) {
                 if (redPoints > bluePoints) {
                     predictedWinner = 0;
                     botHasPredicted = true;
+                    log.message('Calculated predicted winner is ' + predictedWinner, "info");
                 } else if (bluePoints > redPoints) {
                     predictedWinner = 1;
                     botHasPredicted = true;
+                    log.message('Calculated predicted winner is ' + predictedWinner, "info");
                 } else if (redPoints == bluePoints) {
                     predictedWinner = Math.round(Math.random());
                     botHasPredicted = true;
+                    log.message('Randomly predicted winner is ' + predictedWinner, "info");
                 }
             }
         });
     }
-    log.message('Predicted winner is ' + predictedWinner, "info");
 }
 
 function whenRedWins() {
@@ -332,7 +334,6 @@ function setMatchType() {
     } else if (matchCheck.indexOf('bracket') != -1 && matchCheck.indexOf('16 characters are left in the bracket!') == -1 || matchCheck.indexOf('FINAL ROUND!') != -1) {
         matchType = 'Tournament';
     } else if (matchCheck.indexOf('25 exhibition matches left!') != -1) {
-        log.message(matchType, 'debug');
         matchType = 'Tournament Final';
     } else if (matchCheck.indexOf('exhibition matches left!') != -1 ||
         matchCheck.indexOf('100 more matches until the next tournament!') != -1 ||
