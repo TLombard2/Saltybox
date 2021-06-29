@@ -27,7 +27,8 @@ var matchType = '';
 var statusCheck = '';
 var matchStatus = '';
 var oldStatus = '';
-var predictedWinner = 3;
+var predictedWinner = 2;
+var hasPredicted = false;
 
 setInterval(dataObserver, 3000);
 
@@ -35,12 +36,12 @@ function dataObserver() {
     request(stateUrl, function (err, statusCode, data) {
         if (err) {
             log.message(data, "debug");
-            log.message('0: ' + err.message, "error");
+            log.message('2: ' + err.message, "error");
         } else {
             try {
                 fightData = parseJson(data);
             } catch (error) {
-                log.message('1: ' + error, "error");
+                log.message('3: ' + error, "error");
             }
             matchCheck = fightData.remaining;
             statusCheck = fightData.status;
@@ -48,7 +49,7 @@ function dataObserver() {
     });
     setMatchType();
     setMatchStatus();
-    if (matchStatus != oldStatus && matchType != 'Exhibition') { //Exhibitions are not tracked.
+    if ((matchStatus != oldStatus) && matchType != 'Exhibition') { //Exhibitions are not tracked.
         oldStatus = matchStatus;
         let redFighter = fightData.p1name;
 		let blueFighter = fightData.p2name;
@@ -57,6 +58,7 @@ function dataObserver() {
                 predictWinner(redFighter, blueFighter);
                 break;
             case 'locked':
+                predictWinner(redFighter, blueFighter);
                 break;
             case 'redWon':
                 whenRedWins();
@@ -71,260 +73,290 @@ function dataObserver() {
     }
 }
 
-function predictWinner(redName, blueName) {
-    //Check to see if the fighters have fought before
-    //Get data from each fighter from database
-    //Compare w/l ratio, tournament w/l ratio, tournament wins, and favor
-    let botHasPredicted = false;
-    db.all('SELECT matchWinner FROM matchTable WHERE redFighter = ? AND blueFighter = ? OR redFighter = ? AND blueFighter = ?', [redName, blueName, blueName, redName], 
-    function(err,rows){
-        if(err) {
-            log.message('3: ' + err.message, "error");
-        } else {
-            log.message(rows[0], "debug");
-            let redBeatBlue = rows.filter(function() {return redName}).length;
-            let blueBeatRed = rows.filter(function() {return blueName}).length;
-            log.message(redBeatBlue, "debug");
-            log.message(blueBeatRed, "debug");
-            if (redBeatBlue > blueBeatRed) {
-                predictedWinner = 0;
-                botHasPredicted = true;
-            } else if (blueBeatRed > redBeatBlue) {
-                predictedWinner = 1;
-                botHasPredicted = true;
-            }
-        }
-    });
-    if (botHasPredicted == false) { //Checks to make sure predictedWinner wasn't set in the above function.
-        db.all('SELECT * FROM fighterTable WHERE name IN (?, ?)', [redName, blueName], function(err, rows){
-            if(err) {
-                log.message('3: ' + err.message, "error");
-            } else if(typeof rows[0] == 'undefined' || typeof rows[1] == 'undefined') {
-                predictedWinner = Math.round(Math.random());
-                botHasPredicted = true;
-                log.message('Randomly predicted winner is ' + predictedWinner, "info");
-            } else {
-                let redWins = rows[0]['wins'];
-                let redLosses = rows[0]['losses'];
-                let redTotalMatches = rows[0]['matches'];
-                let redTournamentMatchWins = rows[0]['tournamentMatchWins'];
-                let redTournamentMatchLosses = rows[0]['tournamentMatchLosses'];
-                let redTotalTournamentMatches = rows[0]['tournamentMatches'];
-                let redTournamentFinalWins = rows[0]['tournamentFinalWins'];
-                let redFavor = rows[0]['favor'];
-                let redPoints = 0;
-                let redWinRatio = 0;
-                let redTournamentWinRatio = 0;
-
-                if (redTotalMatches > 0) {
-                    if (redLosses > 0) {
-                        redWinRatio = redWins/redLosses;
-                    } else {
-                        redWinRatio = 'undefeated'
-                    }
-                }
-                if (redTotalTournamentMatches > 0) {
-                    if (redTournamentMatchLosses > 0) {
-                        redTournamentWinRatio = redTournamentMatchWins/redTournamentMatchLosses;
-                    } else {
-                        redTournamentWinRatio = 'undefeated'
-                    }
-                }
-                let blueWins = rows[1]['wins'];
-                let blueLosses = rows[1]['losses'];
-                let blueTotalMatches = rows[1]['matches'];
-                let blueTournamentMatchWins = rows[1]['tournamentMatchWins'];
-                let blueTournamentMatchLosses = rows[1]['tournamentMatchLosses'];
-                let blueTotalTournamentMatches = rows[1]['tournamentMatches'];
-                let blueTournamentFinalWins = rows[1]['tournamentFinalWins'];
-                let blueFavor = rows[1]['favor'];
-                let bluePoints = 0;
-                let blueWinRatio = 0;
-                let blueTournamentWinRatio = 0;
-
-                if (blueTotalMatches > 0) {
-                    if (blueLosses > 0) {
-                        blueWinRatio = blueWins/blueLosses;
-                    } else {
-                        blueWinRatio = 'undefeated'
-                    }
-                }
-                if (blueTotalTournamentMatches > 0) {
-                    if (blueTournamentMatchLosses > 0) {
-                        blueTournamentWinRatio = blueTournamentMatchWins/blueTournamentMatchLosses;
-                    } else {
-                        blueTournamentWinRatio = 'undefeated'
-                    }
-                }
-
-                if (redWinRatio == 'undefeated' || blueWinRatio == 'undefeated') {
-                    if (redWinRatio == 'undefeated' && blueWinRatio == 'undefeated') {
-                        redPoints = redPoints + 1;
-                        bluePoints = bluePoints + 1;
-                    } else if (redWinRatio == 'undefeated') {
-                        redPoints = redPoints + 1;
-                    } else if (blueWinRatio == 'undefeated') {
-                        bluePoints - bluePoints + 1;
-                    }
-                } else if (redWinRatio > blueWinRatio) {
-                    redPoints = redPoints + 1;
-                } else if (blueWinRatio > redWinRatio) {
-                    bluePoints = bluePoints +1;
-                } else if (redWinRatio == blueWinRatio) {
-                    redPoints = redPoints + 1;
-                    bluePoints = bluePoints + 1;
-                }
-
-                if (redTournamentWinRatio == 'undefeated' || blueTournamentWinRatio == 'undefeated') {
-                    if (redTournamentWinRatio == 'undefeated' && blueTournamentWinRatio == 'undefeated') {
-                        redPoints = redPoints + 1;
-                        bluePoints = bluePoints + 1;
-                    } else if (redTournamentWinRatio == 'undefeated') {
-                        redPoints = redPoints + 1;
-                    } else if (blueTournamentWinRatio == 'undefeated') {
-                        bluePoints - bluePoints + 1;
-                    }
-                } else if (redTournamentWinRatio > blueTournamentWinRatio) {
-                    redPoints = redPoints + 1;
-                } else if (blueTournamentWinRatio > redTournamentWinRatio) {
-                    bluePoints = bluePoints +1;
-                } else if (redTournamentWinRatio == blueTournamentWinRatio) {
-                    redPoints = redPoints + 1;
-                    bluePoints = bluePoints + 1;
-                }
-
-                if (redTournamentFinalWins > blueTournamentFinalWins) {
-                    redPoints = redPoints + 3;
-                } else if (blueTournamentFinalWins > redTournamentFinalWins) {
-                    bluePoints = bluePoints + 3
-                } else if (redTournamentFinalWins == blueTournamentFinalWins) {
-                    redPoints = redPoints + 3;
-                    bluePoints = bluePoints + 3;
-                }
-
-                if (redFavor > blueFavor) {
-                    redPoints = redPoints + 2;
-                } else if (blueFavor > redFavor) {
-                    bluePoints = bluePoints + 2
-                } else if (redFavor == blueFavor) {
-                    redPoints = redPoints + 2;
-                    bluePoints = bluePoints + 2;
-                }
-
-                if (redPoints > bluePoints) {
-                    predictedWinner = 0;
-                    botHasPredicted = true;
-                    log.message('Calculated predicted winner is ' + predictedWinner, "info");
-                } else if (bluePoints > redPoints) {
-                    predictedWinner = 1;
-                    botHasPredicted = true;
-                    log.message('Calculated predicted winner is ' + predictedWinner, "info");
-                } else if (redPoints == bluePoints) {
-                    predictedWinner = Math.round(Math.random());
-                    botHasPredicted = true;
-                    log.message('Randomly predicted winner is ' + predictedWinner, "info");
-                }
-            }
-        });
+function winPerc (num,den) {
+    if (den > 0) {
+        return (num/den);
+    } else if (den == 0 && num == 0) {
+        return 0;
     }
 }
 
-function whenRedWins() {
-    if (predictedWinner != 3) {
-        db.run('UPDATE botRnd SET totalPredictions = totalPredictions + 1 WHERE name = ?', ['Prediction History'], function (err) {
+function predictWinner(redName, blueName) { 
+    if (hasPredicted == false) {
+        db.all('SELECT redFighter, blueFighter, rowid, matchWinner FROM matchTable WHERE redFighter IN (?, ?) AND blueFighter IN (?, ?)' , [redName, blueName, redName, blueName], function(err, rows){
             if (err) {
-                log.message('2: ' + err.message, "error");
-            }
-            if (predictedWinner == 0) {
-                db.run('UPDATE botRnd SET correctPredictions = correctPredictions + 1 WHERE name = ?', ['Prediction History'], function (err) {
-                    if (err) {
-                        log.message('3: ' + err.message, "error");
-                    } else {
-                        log.message('Prediction was correct!', "info");
+                log.message('4:' + err.message, "error");
+            } else if (rows.length > 0) {
+                let redWins = 0;
+                let blueWins = 0;
+                for (var i = 0; i < rows.length; i++) {
+                    var winner = rows[i].matchWinner
+                    if (winner == redName) {
+                        redWins++;
+                    } else if (winner == blueName) {
+                        blueWins++;
                     }
-                });
-                db.run('INSERT INTO botRnd(correctPredictions) VALUES (?)', ['Yes'], function (err) {
-                    if (err) {
-                        log.message('5: ' + err.message, "error");
-                    }
-                });
-            } else if (predictedWinner != 3) {
-                log.message('Prediction was incorrect!', "info");
-                db.run('INSERT INTO botRnd(correctPredictions) VALUES (?)', ['No'], function (err) {
-                    if (err) {
-                        log.message('5: ' + err.message, "error");
-                    }
-                });
-            }
-            db.all('SELECT COUNT(*) FROM botRnd', [], function (err, rows) {
-                if (err) {
-                    log.message('4: ' + err.message, "error");
-                } else if (rows[0]['COUNT(*)'] == 102) {
-                    db.run('DELETE FROM botRnd WHERE rowid = ?', [2], function (err) {
-                        if (err) {
-                            log.message('5: ' + err.message, "error");
-                        } else {
-                            db.run('UPDATE botRnd SET rowid = rowid - 1 WHERE rowid > 1', [], function (err) {
-                                if (err) {
-                                    log.message('5: ' + err.message, "error");
-                                }
-                            });
-                        }
-                    });
                 }
-            });
+                if (redWins > blueWins) {
+                    predictedWinner = 0;
+                    hasPredicted = true;
+                    log.message(redName + ' is predicted to win!', "info");
+                    return;
+                } else if (blueWins > redWins) {
+                    predictedWinner = 1;
+                    hasPredicted = true;
+                    log.message(blueName + ' is predicted to win!', "info");
+                    return;
+                } else if (redWins == blueWins) {
+                    predictedWinner = Math.floor(Math.random() * 2);
+                    hasPredicted = true;
+                    if (predictedWinner = 0) {
+                        log.message(redName + ' is randomly predicted to win!', "info");
+                    } else if (predictedWinner = 1) {
+                        log.message(blueName + ' is randomly predicted to win!', "info");
+                    }
+                    return;
+                }
+            }
         });
+        let redHasAdv = false;
+        let blueHasAdv = false;
+
+        db.all('SELECT redFighter, blueFighter, matchWinner FROM matchTable WHERE redFighter IN (?, ?) OR blueFighter IN (?, ?)', [redName, blueName, redName, blueName], function (err,rows) {
+            if (err) {
+                log.message('5:' + err.message, "error");
+            } else {
+                let redBeatList = [];
+                let redLostList = [];
+                let blueBeatList = [];
+                let blueLostList = [];
+                for (var i = 0; i < rows.length; i++) {
+                    switch(rows[i].redFighter) { //List all opponents who fighters have won or lost against
+                        case redName:
+                            if (rows[i].matchWinner == redName) {
+                                redBeatList.push(rows[i].blueFighter);
+                            } else if (rows[i].matchWinner != redName) {
+                                redLostList.push(rows[i].blueFighter);
+                            }
+                            break;
+                        case blueName:
+                            if (rows[i].matchWinner == blueName) {
+                                blueBeatList.push(rows[i].blueFighter);
+                            } else if (rows[i].matchWinner != blueName) {
+                                blueLostList.push(rows[i].blueFighter);
+                            }
+                            break;
+                    }
+                    switch(rows[i].blueFighter) {
+                        case redName:
+                            if (rows[i].matchWinner == redName) {
+                                redBeatList.push(rows[i].redFighter);
+                            } else if (rows[i].matchWinner != redName) {
+                                redLostList.push(rows[i].redFighter);
+                            }
+                            break;
+                        case blueName:
+                            if (rows[i].matchWinner == blueName) {
+                                blueBeatList.push(rows[i].redFighter);
+                            } else if (rows[i].matchWinner != blueName) {
+                                blueLostList.push(rows[i].redFighter);
+                            }
+                            break;
+                    }
+                }
+                console.log(redBeatList);
+                console.log(redLostList);
+                console.log(blueBeatList);
+                console.log(blueLostList);
+                let redAdv = 0;
+                let blueAdv = 0;
+                for (var i = 0; i < redBeatList.length; i++) { //Search through lists to find if there is a match
+                    for (var j = 0; j < blueLostList.length; j++) {
+                        if (redBeatList[i] == blueLostList[j]) {
+                            redAdv++
+                        }
+                    }
+                }
+                for (var i = 0; i < blueBeatList.length; i++) {
+                    for (var j = 0; j < redLostList.length; j++) {
+                        if (blueBeatList[i] == redLostList[j]) {
+                            blueAdv++
+                        }
+                    }
+                };
+
+                if (redAdv > blueAdv) {
+                    redHasAdv = true;
+                } else if (blueAdv > redAdv) {
+                    blueHasAdv = true;
+                } else if (redAdv == blueAdv) {
+                    //do nothing
+                }
+            }
+        });
+
+
+        db.all('SELECT * FROM fighterTable WHERE name IN (?, ?)', [redName, blueName], function(err, rows) {
+            console.log(rows);
+            if (err) {
+                log.message('8:' + err.message, "error");
+            } else if (rows.length == 2){ //If both fighters exist
+                if (redName != rows[0].name) {
+                    [rows[0], rows[1]] =  [rows[1], rows[0]]; //If red fighter isn't at index 0 then swap 0 and 1.
+                }
+                
+                let rMatchWins = rows[0].wins;
+                let rMatchLosses = rows[0].losses;
+                let rMatches = rows[0].matches;
+                let rTMatchWins = rows[0].tournamentMatchWins;
+                let rTMatchLosses = rows[0].tournamentMatchLosses;
+                let rTMatches = rows[0].tournamentMatches;
+                let rTFinalWins = rows[0].tournamentFinalWins;
+                let rFavor = rows[0].favor;
+
+                let bMatchWins = rows[1].wins;
+                let bMatchLosses = rows[1].losses;
+                let bMatches = rows[1].matches;
+                let bTMatchWins = rows[1].tournamentMatchWins;
+                let bTMatchLosses = rows[1].tournamentMatchLosses;
+                let bTMatches = rows[1].tournamentMatches;
+                let bTFinalWins = rows[1].tournamentFinalWins;
+                let bFavor = rows[1].favor;
+
+                let rWinRatio = winPerc(rMatchWins, rMatches);
+                let rTWinRatio = winPerc(rTMatchWins, rTMatches);
+                let bWinRatio = winPerc(bMatchWins, bMatches);
+                let bTWinRatio = winPerc(bTMatchWins, bTMatches);
+                
+                let redPoints = 0;
+                let bluePoints = 0;
+
+                if (rMatches > 0 && bMatches > 0) {
+                    if (rWinRatio > bWinRatio) {
+                        redPoints = redPoints + 1;
+                    } else if (bWinRatio > rWinRatio) {
+                        bluePoints = bluePoints + 1;
+                    } else if (rWinRatio == bWinRatio) {
+                        //do nothing
+                    }
+                }
+
+                if (rTMatches > 0 && bTMatches > 0) {
+                    if (rTWinRatio > bTWinRatio) {
+                        redPoints = redPoints + 1;
+                    } else if (bTWinRatio > rTWinRatio) {
+                        bluePoints = bluePoints + 1;
+                    } else if (rTWinRatio == bTWinRatio) {
+                        //do nothing
+                    }
+                }
+
+                if (rTFinalWins > bTFinalWins) {
+                    redPoints = redPoints + 3;
+                } else if (bTFinalWins > rTFinalWins) {
+                    bluePoints = bluePoints + 3;
+                } else if (rTFinalWins == bTFinalWins) {
+                    //do nothing
+                }
+
+                if (rFavor > bFavor) {
+                    redPoints = redPoints + 2;
+                } else if (bFavor > rFavor) {
+                    bluePoints = bluePoints + 2;
+                } else if (rFavor == bFavor) {
+                    //do nothing
+                }
+
+                if (redHasAdv == true) {
+                    redPoints = redPoints + 2;
+                } else if (blueHasAdv == true) {
+                    bluePoints = bluePoints + 2;
+                }
+                console.log("Predictors---");
+                console.log("red win %: " + rWinRatio);
+                console.log("blue win %: " + bWinRatio);
+                console.log("red T win %: " + rTWinRatio);
+                console.log("blue T win %: " + bTWinRatio);
+                console.log("red T finals: " + rTFinalWins);
+                console.log("blue T finals: " + bTFinalWins);
+                console.log("red favor: " + rFavor);
+                console.log("blue favor: " + bFavor);
+                console.log("red adv: " + redHasAdv);
+                console.log("blue adv: " + blueHasAdv);
+                console.log("---End");
+
+                if (redPoints > bluePoints) {
+                    predictedWinner = 0;
+                    hasPredicted = true;
+                    log.message(redName + ' is predicted to win!', "info");
+                    return;
+                } else if (bluePoints > redPoints) {
+                    predictedWinner = 1;
+                    hasPredicted = true;
+                    log.message(blueName + ' is predicted to win!', "info");
+                    return;
+                } else if (redPoints == bluePoints) {
+                    predictedWinner = Math.floor(Math.random() * 2);
+                    hasPredicted = true;
+                    if (predictedWinner = 0) {
+                        log.message(redName + ' is randomly predicted to win!', "info");
+                    } else if (predictedWinner = 1) {
+                        log.message(blueName + ' is randomly predicted to win!', "info");
+                    }
+                    return;
+                }
+            } else if (rows.length < 2) {
+                predictedWinner = Math.floor(Math.random() * 2);
+                hasPredicted = true;
+                if (predictedWinner = 0) {
+                    log.message(redName + ' is randomly predicted to win!', "info");
+                } else if (predictedWinner = 1) {
+                    log.message(blueName + ' is randomly predicted to win!', "info");
+                }
+                return;
+            }
+        })
+    }
+}
+
+
+
+function whenRedWins() {
+    hasPredicted = false;
+    if (predictedWinner == 0) {
+        db.run('UPDATE botRnd SET correctPredictions = correctPredictions + 1, totalPredictions = totalPredictions + 1 WHERE name = ?', ["Prediction History"], function(err) {
+            if (err) {
+                log.message('9:' + err.message, "error");
+        }
+        log.message("I predicted correctly!", "info");
+    });
+    } else if (predictedWinner == 1) {
+        db.run('UPDATE botRnd SET totalPredictions = totalPredictions + 1 WHERE name = ?', ["Prediction History"], function(err) {
+            if (err) {
+                log.message('10:' + err.message, "error");
+        }
+        log.message("I predicted incorrectly.", "info");
+    });
     }
 }
 
 function whenBlueWins() {
-    if (predictedWinner != 3) {
-        db.run('UPDATE botRnd SET totalPredictions = totalPredictions + 1 WHERE name = ?', ['Prediction History'], function (err) {
+    hasPredicted = false;
+    if (predictedWinner == 1) {
+        db.run('UPDATE botRnd SET correctPredictions = correctPredictions + 1, totalPredictions = totalPredictions + 1 WHERE name = ?', ["Prediction History"], function(err) {
             if (err) {
-                log.message('2: ' + err.message, "error");
-            }
-        });
-        if (predictedWinner == 1) {
-            db.run('UPDATE botRnd SET correctPredictions = correctPredictions + 1 WHERE name = ?', ['Prediction History'], function (err) {
-                if (err) {
-                    log.message('3: ' + err.message, "error");
-                } else {
-                    log.message('Prediction was correct!', "info");
-                }
-            });
-            db.run('INSERT INTO botRnd(correctPredictions) VALUES (?)', ['Yes'], function (err) {
-                if (err) {
-                    log.message('5: ' + err.message, "error");
-                }
-            });
-
-        } else if (predictedWinner != 3) {
-            log.message('Prediction was incorrect!', "info");
-            db.run('INSERT INTO botRnd(correctPredictions) VALUES (?)', ['No'], function (err) {
-                if (err) {
-                    log.message('5: ' + err.message, "error");
-                }
-            });
+                log.message('11:' + err.message, "error");
         }
-        db.all('SELECT COUNT(*) FROM botRnd', [], function (err, rows) {
-            log.message(rows[0]['COUNT(*)'], "debug");
+        log.message("I predicted correctly!", "info");
+    });
+    } else if (predictedWinner == 0) {
+        db.run('UPDATE botRnd SET totalPredictions = totalPredictions + 1 WHERE name = ?', ["Prediction History"], function(err) {
             if (err) {
-                log.message('4: ' + err.message, "error");
-            } else if (rows[0]['COUNT(*)'] == 102) {
-                db.run('DELETE FROM botRnd WHERE rowid = ?', [2], function (err) {
-                    if (err) {
-                        log.message('5: ' + err.message, "error");
-                    } else {
-                        db.run('UPDATE botRnd SET rowid = rowid - 1 WHERE rowid > 1', [], function (err) {
-                            if (err) {
-                                log.message('5: ' + err.message, "error");
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    };
+                log.message('12:' + err.message, "error");
+        }
+        log.message("I predicted incorrectly.", "info");
+    });
+    }
 }
 
 
