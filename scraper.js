@@ -6,7 +6,7 @@ const parseJson = require('parse-json');
 var db = new sqlite3.Database('saltydb.db');
 db.run('CREATE TABLE IF NOT EXISTS fighterTable (name text, wins integer DEFAULT 0, losses integer DEFAULT 0, matches integer DEFAULT 0, tournamentMatchWins integer DEFAULT 0,\
 	tournamentMatchLosses integer DEFAULT 0, tournamentMatches integer DEFAULT 0, tournamentFinalWins integer DEFAULT 0, favor integer DEFAULT 0)');
-db.run('CREATE TABLE IF NOT EXISTS matchTable (redFighter text, blueFighter text, redBets integer DEFAULT 0,blueBets integer DEFAULT 0, matchWinner text, matchType text, matchTime text)');
+db.run('CREATE TABLE IF NOT EXISTS matchTable (redFighter text, blueFighter text, redBets integer DEFAULT 0,blueBets integer DEFAULT 0, matchWinner text, matchType text, matchTime text, prediction text, saltWon integer)');
 
 var fightData = '';
 const stateUrl = 'https://www.saltybet.com/state.json';
@@ -19,11 +19,11 @@ var oldStatus = '';
 setInterval(dataObserver,3000);
 
 function dataObserver() {
-	request(stateUrl, function(err, statusCode, data) {
+	request(stateUrl, function(err, res, data) {
 		if (err) {
 			log.message(data, "debug");	
 			log.message('0: ' + err.message, "error");
-			} else {	
+			} else if(res.statusCode != 522){	
 		try {		
 			fightData = parseJson(data);
 		} catch (error) {
@@ -75,7 +75,6 @@ function setMatchType() {
 	} else if (matchCheck.indexOf('bracket') != -1 && matchCheck.indexOf('16 characters are left in the bracket!') == -1 || matchCheck.indexOf('FINAL ROUND!') != -1) {
 		matchType = 'Tournament';
 	} else if (matchCheck.indexOf('25 exhibition matches left!') != -1) {
-		log.message(matchType, 'debug');
 		matchType = 'Tournament Final';
 	} else if(matchCheck.indexOf('exhibition matches left!') != -1 || 
 	matchCheck.indexOf('100 more matches until the next tournament!') != -1 || 
@@ -208,16 +207,43 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 		if(err) {
 			log.message(err.message, "error");
 		} else {
+			let num = rows[0]
+			let rowCount = (num['COUNT(*)']);
 			let matchTime = new Date().toLocaleString(); 
 			redBets = parseInt(redBets.replace(/,/g, ""));
 			blueBets = parseInt(blueBets.replace(/,/g, ""));
-			db.run('INSERT INTO matchTable VALUES (?, ?, ?, ?, ?, ?, ?)', [redFighter, blueFighter, redBets, blueBets, winner, matchType, matchTime], function(err) {
+
+			let rowCheck = '';
+			db.all('SELECT * FROM matchTable WHERE rowid = (?)', [rowCount], function(err, rows2) {
 				if (err) {
 					log.message('12: ' + err.message, "error");
 				} else {
-					log.message('Match has been saved to the database!', "info");
+					if (rows2[0].redFighter == null) {
+						rowCheck = true;
+					} else {
+						rowCheck = false;
+					}
+					if (rowCheck == false) {
+						db.run('INSERT INTO matchTable VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [redFighter, blueFighter, redBets, blueBets, winner, matchType, matchTime, 'Bot Offline', 'Bot Offline'], function(err) {
+							if (err) {
+								log.message('12: ' + err.message, "error");
+							} else {
+								log.message('Match has been saved to the database!', "info");
+							}
+						});
+					} else {
+						db.run('UPDATE matchTable SET redFighter = (?), blueFighter = (?), redBets = (?), blueBets = (?), matchWinner = (?), matchType = (?), matchTime = (?) WHERE rowid = (?)', 
+						[redFighter, blueFighter, redBets, blueBets, winner, matchType, matchTime, rowCount], function(err) {
+							if (err) {
+								log.message('12: ' + err.message, "error");
+							} else {
+								log.message('Match has been saved to the database!', "info");
+							}
+						});
+					}	
 				}
 			});
+					
 		}
 	});	
 }
