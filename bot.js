@@ -38,6 +38,7 @@ var salt = 0;
 var oldSalt = 0;
 var oldRedFighter = '';
 var oldBlueFighter = '';
+var lastMatchType = '';
 
 setInterval(dataObserver, 3000);
 
@@ -384,7 +385,7 @@ async function saltyBot() {
     }
 
     let saltWon = (salt-oldSalt);
-    if (saltWon != oldSalt && oldSalt != 0) { //This is adding salt to the new match that just started. 
+    if (saltWon != oldSalt && oldSalt != 0 && lastMatchType == 'matchmaking' && matchType != 'Tournament') { //This is adding salt to the new match that just started. Tournament salt is not tracked.
         db.run('UPDATE matchTable SET saltWon = (?) WHERE redFighter = (?) AND blueFighter = (?)', [saltWon, oldRedFighter, oldBlueFighter], function(err) {
             if (err) {
                 log.message('12: ' + err.message, "error");
@@ -393,6 +394,7 @@ async function saltyBot() {
                 oldSalt = salt;
                 oldRedFighter = redFighter;
                 oldBlueFighter = blueFighter;
+                lastMatchType = matchType;
             }
         });
     }
@@ -419,13 +421,10 @@ async function saltyBot() {
             oldSalt = salt;
             oldRedFighter = redFighter;
             oldBlueFighter = blueFighter;
+            lastMatchType = matchType;
         }
     
 }
-
-    
-
-
 
 
 function whenRedWins() {
@@ -474,20 +473,6 @@ async function betCalc(salt) {
     } else {
         let calc = (salt*.025);   
         return Math.round(calc).toString();
-    }
-}
-
-function setMatchType2() { // != -1 means its true == -1 means false
-    if (matchCheck.indexOf('until the next tournament!') != -1 && matchCheck.indexOf('100 more matches until the next tournament!') == -1) {
-        matchType = 'Matchmaking';
-    } else if (matchCheck.indexOf('bracket') != -1 && matchCheck.indexOf('16 characters are left in the bracket!') == -1 || matchCheck.indexOf('FINAL ROUND!') != -1) {
-        matchType = 'Tournament';
-/*  } else if (matchCheck.indexOf('25 exhibition matches left!') != -1) { 
-        matchType = 'Tournament Final'; */
-    } else if (matchCheck.indexOf('exhibition matches left!') != -1 ||
-        matchCheck.indexOf('100 more matches until the next tournament!') != -1 ||
-        matchCheck.indexOf('Matchmaking mode will be activated after the next exhibition match!') != -1) {
-        matchType = 'Exhibition';
     }
 }
 
