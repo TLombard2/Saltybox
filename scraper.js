@@ -70,17 +70,24 @@ function dataObserver() {
 }
 
 function setMatchType() {
-	if (matchCheck.indexOf('until the next tournament!') != -1 && matchCheck.indexOf('100 more matches until the next tournament!') == -1) {
-		matchType = 'Matchmaking';
-	} else if (matchCheck.indexOf('bracket') != -1 && matchCheck.indexOf('16 characters are left in the bracket!') == -1 || matchCheck.indexOf('FINAL ROUND!') != -1) {
-		matchType = 'Tournament';
-	} else if (matchCheck.indexOf('25 exhibition matches left!') != -1) {
-		matchType = 'Tournament Final';
-	} else if(matchCheck.indexOf('exhibition matches left!') != -1 || 
-	matchCheck.indexOf('100 more matches until the next tournament!') != -1 || 
-	matchCheck.indexOf('Matchmaking mode will be activated after the next exhibition match!') != -1) {
-		matchType = 'Exhibition';
-	}
+    if ((matchCheck.indexOf('100 more matches until the next tournament!') != -1 && matchStatus == 'open') ||
+    (matchCheck.indexOf('until the next tournament!') != -1 && matchCheck.indexOf('100 more matches until the next tournament!') == -1) || 
+    (matchCheck.indexOf('Tournament mode will be activated after the next match!') != -1) ||
+    (matchCheck.indexOf('Tournament mode start!') != -1 && (matchStatus == 'redWon' || matchStatus == 'blueWon'))) {
+        matchType = 'Matchmaking';
+    } else if ((matchCheck.indexOf('Tournament mode start!') != -1 && matchStatus == 'open') ||
+    (matchCheck.indexOf('bracket') != -1) ||
+    (matchCheck.indexOf('FINAL ROUND!') != -1 && (matchStatus == 'redWon' || matchStatus == 'blueWon'))) {
+        matchType = 'Tournament';
+    } else if ((matchCheck.indexOf('FINAL ROUND!') != -1 && matchStatus == 'open') ||
+    (matchCheck.indexOf('25 exhibition matches left!') != -1 && (matchStatus == 'redWon' || matchStatus == 'blueWon'))) {
+        matchType = 'Tournament Final';
+    } else if ((matchCheck.indexOf('25 exhibition matches left!') != -1 && matchStatus == 'open') ||
+    (matchCheck.indexOf('exhibition matches left!') != -1 && matchCheck.indexOf('25 exhibition matches left!') == -1) ||
+    (matchCheck.indexOf('Matchmaking mode will be activated after the next exhibition match!') != -1) ||
+    (matchCheck.indexOf('100 more matches until the next tournament!') != -1 && (matchStatus == 'redWon' || matchStatus == 'blueWon'))) {
+        matchType = 'Exhibition';
+    }
 }
 
 function setMatchStatus() {
