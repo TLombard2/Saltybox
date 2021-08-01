@@ -63,7 +63,7 @@ function dataObserver() {
 				}, 100);
 				break;
 			default:
-				log.message('Unknown match status!', "error");
+				log.message('2: Unknown match status!', "error");
 				break;
 		}
 	}
@@ -110,7 +110,7 @@ function setMatchStatus() {
 function checkDatabase(redFighter, blueFighter) {
 	db.all('SELECT name FROM fighterTable WHERE name IN (?, ?)', [redFighter, blueFighter], function(err, rows) {
 		if (err) {
-			log.message('2: ' + err.message, "error");
+			log.message('3: ' + err.message, "error");
 		} else if (typeof rows[0] == 'undefined' && typeof rows[1] == 'undefined') { //Neither fighter found.
 			addFighterName(redFighter, blueFighter);
 			log.message('Adding both fighters...', "info");
@@ -126,7 +126,7 @@ function checkDatabase(redFighter, blueFighter) {
 			log.message('New fighter, ' + redFighter + ', is being added...', "info");
 			log.message(blueFighter + ' already exists in the database.', "info");
 		} else {	
-			log.message('Database check failed!', "error");	
+			log.message('4: Database check failed!', "error");	
 		}
 	});
 }
@@ -135,7 +135,7 @@ function addFighterName (name1, name2,) {
 	if (typeof name1 != 'undefined' && typeof name2 == 'undefined') {
 		db.run('INSERT INTO fighterTable(name) VALUES (?)', [name1], function (err) {
 			if (err) {
-				log.message('3: ' + err.message, "error");
+				log.message('5: ' + err.message, "error");
 			} else {
 				log.message(name1 + ' has been added to the database.', "info");
 			}
@@ -143,7 +143,7 @@ function addFighterName (name1, name2,) {
 	} else {
 		db.run('INSERT INTO fighterTable(name) VALUES (?), (?)', [name1, name2], function (err) {
 			if (err) {
-				log.message('4: ' + err.message, "error");
+				log.message('6: ' + err.message, "error");
 			} else {
 				log.message(name1 + ' and ' + name2 + ' have been added to the database.', "info");
 			}
@@ -156,31 +156,15 @@ function addMatchResults(winner, loser) {
 		case 'Tournament Final':
 			db.run('UPDATE fighterTable SET tournamentFinalWins = tournamentFinalWins + 1 WHERE name = ?', [winner], function(err){
 				if (err) {
-					log.message('5: ' + err.message, "error");
+					log.message('7: ' + err.message, "error");
 				} else {
 					log.message(winner + ' won the tournament! The database has been updated.', "info");
 				}
 			})
 			db.run('UPDATE fighterTable SET tournamentMatchWins = tournamentMatchWins + 1, tournamentMatches = tournamentMatches + 1 WHERE name = ?', [winner], function(err) {
 				if (err) {
-					log.message('6: ' + err.message, "error");
-				} 
-			});
-			db.run('UPDATE fighterTable SET tournamentMatchLosses = tournamentMatchLosses + 1, tournamentMatches = tournamentMatches + 1 WHERE name = ?', [loser], function(err) {
-				if (err) {
-					log.message('7: ' + err.message, "error");
-				} else {
-					log.message(loser + ' lost the match! The database has been updated.', "info");
-				}
-			});
-			break;
-		case 'Tournament':
-			db.run('UPDATE fighterTable SET tournamentMatchWins = tournamentMatchWins + 1, tournamentMatches = tournamentMatches + 1 WHERE name = ?', [winner], function(err) {
-				if (err) {
 					log.message('8: ' + err.message, "error");
-				} else {
-					log.message(winner + ' won the match! The database has been updated.', "info");
-				}
+				} 
 			});
 			db.run('UPDATE fighterTable SET tournamentMatchLosses = tournamentMatchLosses + 1, tournamentMatches = tournamentMatches + 1 WHERE name = ?', [loser], function(err) {
 				if (err) {
@@ -190,17 +174,33 @@ function addMatchResults(winner, loser) {
 				}
 			});
 			break;
+		case 'Tournament':
+			db.run('UPDATE fighterTable SET tournamentMatchWins = tournamentMatchWins + 1, tournamentMatches = tournamentMatches + 1 WHERE name = ?', [winner], function(err) {
+				if (err) {
+					log.message('10: ' + err.message, "error");
+				} else {
+					log.message(winner + ' won the match! The database has been updated.', "info");
+				}
+			});
+			db.run('UPDATE fighterTable SET tournamentMatchLosses = tournamentMatchLosses + 1, tournamentMatches = tournamentMatches + 1 WHERE name = ?', [loser], function(err) {
+				if (err) {
+					log.message('11: ' + err.message, "error");
+				} else {
+					log.message(loser + ' lost the match! The database has been updated.', "info");
+				}
+			});
+			break;
 		case 'Matchmaking': 
 		db.run('UPDATE fighterTable SET wins = wins + 1, matches = matches + 1 WHERE name = ?', [winner], function(err) {
 			if (err) {
-				log.message('10: ' + err.message, "error");
+				log.message('12: ' + err.message, "error");
 			} else {
 				log.message(winner + ' won the match! The database has been updated.', "info");
 			}
 		});
 		db.run('UPDATE fighterTable SET losses = losses + 1, matches = matches + 1 WHERE name = ?', [loser], function(err) {
 			if (err) {
-				log.message('11: ' + err.message, "error");
+				log.message('13: ' + err.message, "error");
 			} else {
 				log.message(loser + ' lost the match! The database has been updated.', "info");
 			}
@@ -212,7 +212,7 @@ function addMatchResults(winner, loser) {
 function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 	db.all('SELECT COUNT(*) FROM matchTable', [], function (err,rows) {
 		if(err) {
-			log.message(err.message, "error");
+			log.message('14: ' + err.message, "error");
 		} else {
 			let num = rows[0]
 			let rowCount = (num['COUNT(*)']);
@@ -223,7 +223,7 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 			let rowCheck = '';
 			db.all('SELECT * FROM matchTable WHERE rowid = (?)', [rowCount], function(err, rows2) {
 				if (err) {
-					log.message('12: ' + err.message, "error");
+					log.message('15: ' + err.message, "error");
 				} else {
 					if (rows2[0].redFighter == null) {
 						rowCheck = true;
@@ -233,7 +233,7 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 					if (rowCheck == false) {
 						db.run('INSERT INTO matchTable VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [redFighter, blueFighter, redBets, blueBets, winner, matchType, matchTime, 'Bot Offline', 'Bot Offline'], function(err) {
 							if (err) {
-								log.message('12: ' + err.message, "error");
+								log.message('16: ' + err.message, "error");
 							} else {
 								log.message('Match has been saved to the database!', "info");
 							}
@@ -242,7 +242,7 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 						db.run('UPDATE matchTable SET redFighter = (?), blueFighter = (?), redBets = (?), blueBets = (?), matchWinner = (?), matchType = (?), matchTime = (?) WHERE rowid = (?)', 
 						[redFighter, blueFighter, redBets, blueBets, winner, matchType, matchTime, rowCount], function(err) {
 							if (err) {
-								log.message('12: ' + err.message, "error");
+								log.message('17: ' + err.message, "error");
 							} else {
 								log.message('Match has been saved to the database!', "info");
 							}
@@ -263,7 +263,7 @@ function addFavor(redFighter, blueFighter, redBets, blueBets) {
 		if (matchOdds >= 1.4) {
 			db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [redFighter], function(err) {
 				if(err) {
-					log.message('13: ' + err.message, "error");
+					log.message('18: ' + err.message, "error");
 				} else {
 					log.message(redFighter + ' was favored!', "info");
 				}
@@ -276,7 +276,7 @@ function addFavor(redFighter, blueFighter, redBets, blueBets) {
 		if (matchOdds >= 1.4) {
 			db.run('UPDATE fighterTable SET favor = favor + 1 WHERE name = ?', [blueFighter], function(err) {
 				if(err) {
-					log.message('14: ' + err.message, "error");
+					log.message('19: ' + err.message, "error");
 				} else {
 					log.message(blueFighter + ' was favored!', "info");
 				}
