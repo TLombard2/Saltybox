@@ -1,5 +1,5 @@
 const http = require('http');
-const log = require('/.log')
+const log = require('./log');
 
 //Create webserver.
 const hostName = '192.168.0.162'; //local network access.
