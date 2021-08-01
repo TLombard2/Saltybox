@@ -78,7 +78,7 @@ function dataObserver() {
                 hasBet = false;
                 break;
             default:
-                log.message('Unknown match status!', "error");
+                log.message('4: Unknown match status!', "error");
                 break;
         }
     }
@@ -96,7 +96,7 @@ function predictWinner(redName, blueName) {
     if (hasPredicted == false) {
         db.all('SELECT redFighter, blueFighter, rowid, matchWinner FROM matchTable WHERE redFighter IN (?, ?) AND blueFighter IN (?, ?)' , [redName, blueName, redName, blueName], function(err, rows){
             if (err) {
-                log.message('4:' + err.message, "error");
+                log.message('5:' + err.message, "error");
             } else if (rows.length > 0) {
                 let redWins = 0;
                 let blueWins = 0;
@@ -138,7 +138,7 @@ function predictWinner(redName, blueName) {
 
         db.all('SELECT redFighter, blueFighter, matchWinner FROM matchTable WHERE redFighter IN (?, ?) OR blueFighter IN (?, ?)', [redName, blueName, redName, blueName], function (err,rows) {
             if (err) {
-                log.message('5:' + err.message, "error");
+                log.message('6:' + err.message, "error");
             } else {
                 let redBeatList = [];
                 let redLostList = [];
@@ -208,7 +208,7 @@ function predictWinner(redName, blueName) {
 
         db.all('SELECT * FROM fighterTable WHERE name IN (?, ?)', [redName, blueName], function(err, rows) {
             if (err) {
-                log.message('8:' + err.message, "error");
+                log.message('7:' + err.message, "error");
             } else if (rows.length == 2){ //If both fighters exist
                 if (redName != rows[0].name) {
                     [rows[0], rows[1]] =  [rows[1], rows[0]]; //If red fighter isn't at index 0 then swap 0 and 1.
@@ -385,10 +385,10 @@ async function saltyBot() {
     }
 
     let saltWon = (salt-oldSalt);
-    if (saltWon != oldSalt && oldSalt != 0 && lastMatchType == 'matchmaking' && matchType != 'Tournament') { //This is adding salt to the new match that just started. Tournament salt is not tracked.
+    if (saltWon != oldSalt && oldSalt != 0 && lastMatchType != 'Tournament Final' && matchType != 'Tournament' && matchType != 'Tournament Final') { //This is adding salt to the new match that just started. Tournament salt is not tracked.
         db.run('UPDATE matchTable SET saltWon = (?) WHERE redFighter = (?) AND blueFighter = (?)', [saltWon, oldRedFighter, oldBlueFighter], function(err) {
             if (err) {
-                log.message('12: ' + err.message, "error");
+                log.message('8: ' + err.message, "error");
             } else {
                 log.message('I earned ' + saltWon + ' salt last match!', "info");
                 oldSalt = salt;
@@ -397,32 +397,35 @@ async function saltyBot() {
                 lastMatchType = matchType;
             }
         });
+    } else {
+        lastMatchType = matchType;
     }
-        if (predictedWinner == 0) {
-            await page.click('id=player1');  
-            db.run('INSERT INTO matchTable VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [null, null, null, null, null, null, null, redFighter, null], function(err) {
-                if (err) {
-                    log.message('12: ' + err.message, "error");
-                } else {
-                    log.message('Prediction has been saved to the database!', "info");
-                }
-            });
-        }  else if (predictedWinner == 1) {
-             await page.click('id=player2');
-              db.run('INSERT INTO matchTable VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [null, null, null, null, null, null, null, blueFighter, null], function(err) {
-                if (err) {
-                    log.message('12: ' + err.message, "error");
-                } else {
-                    log.message('Prediction has been saved to the database!', "info");
-                }
-            });
-        }
-        if (oldSalt == 0) {
-            oldSalt = salt;
-            oldRedFighter = redFighter;
-            oldBlueFighter = blueFighter;
-            lastMatchType = matchType;
-        }
+
+    if (predictedWinner == 0) {
+        await page.click('id=player1');  
+        db.run('INSERT INTO matchTable VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [null, null, null, null, null, null, null, redFighter, null], function(err) {
+            if (err) {
+                log.message('9: ' + err.message, "error");
+            } else {
+                log.message('Prediction has been saved to the database!', "info");
+            }
+        });
+    }  else if (predictedWinner == 1) {
+            await page.click('id=player2');
+            db.run('INSERT INTO matchTable VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [null, null, null, null, null, null, null, blueFighter, null], function(err) {
+            if (err) {
+                log.message('10: ' + err.message, "error");
+            } else {
+                log.message('Prediction has been saved to the database!', "info");
+            }
+        });
+    }
+    if (oldSalt == 0) {
+        oldSalt = salt;
+        oldRedFighter = redFighter;
+        oldBlueFighter = blueFighter;
+        lastMatchType = matchType;
+    }
     
 }
 
@@ -432,14 +435,14 @@ function whenRedWins() {
     if (predictedWinner == 0) {
         db.run('UPDATE botStats SET correctPredictions = correctPredictions + 1, totalPredictions = totalPredictions + 1 WHERE name = ?', ["Prediction History"], function(err) {
             if (err) {
-                log.message('12:' + err.message, "error");
+                log.message('11:' + err.message, "error");
             }
             log.message("I predicted correctly!", "info");
         });
     } else if (predictedWinner == 1) {
         db.run('UPDATE botStats SET totalPredictions = totalPredictions + 1 WHERE name = ?', ["Prediction History"], function(err) {
             if (err) {
-                log.message('14:' + err.message, "error");
+                log.message('12:' + err.message, "error");
             }   
         log.message("I predicted incorrectly.", "info");
     });
@@ -451,14 +454,14 @@ function whenBlueWins() {
     if (predictedWinner == 1) {
         db.run('UPDATE botStats SET correctPredictions = correctPredictions + 1, totalPredictions = totalPredictions + 1 WHERE name = ?', ["Prediction History"], function(err) {
             if (err) {
-                log.message('16:' + err.message, "error");
+                log.message('13:' + err.message, "error");
         }
         log.message("I predicted correctly!", "info");
     });
     } else if (predictedWinner == 0) {
         db.run('UPDATE botStats SET totalPredictions = totalPredictions + 1 WHERE name = ?', ["Prediction History"], function(err) {
             if (err) {
-                log.message('18:' + err.message, "error");
+                log.message('14:' + err.message, "error");
         }
         log.message("I predicted incorrectly.", "info");
     });
