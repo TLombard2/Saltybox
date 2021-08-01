@@ -362,7 +362,7 @@ let page = '';
 async function saltyBot() {
      if (hasLoggedIn == false) { //login
         hasLoggedIn = true;
-        browser = await chromium.launch({headless: false, slowMo: 50});
+        browser = await chromium.launch({headless: true});
         context = await browser.newContext();
         context.setDefaultTimeout(0);
         page = await context.newPage();
@@ -398,6 +398,8 @@ async function saltyBot() {
             }
         });
     } else {
+        oldRedFighter = redFighter;
+        oldBlueFighter = blueFighter;
         lastMatchType = matchType;
     }
 
