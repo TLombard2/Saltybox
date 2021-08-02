@@ -219,7 +219,6 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 			let matchTime = new Date().toLocaleString(); 
 			redBets = parseInt(redBets.replace(/,/g, ""));
 			blueBets = parseInt(blueBets.replace(/,/g, ""));
-			console.log(rowCount);
 
 			let rowCheck = '';
 			db.all('SELECT * FROM matchTable WHERE rowid = (?)', [rowCount], function(err, rows2) {
