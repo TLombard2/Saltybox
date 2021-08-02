@@ -1,0 +1,25 @@
+{
+  "name": "saltybox",
+  "version": "1.0.0",
+  "description": "A webscraper and betting bot for Saltybet.com",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TLombard2/Saltybox.git"
+  },
+  "keywords": [],
+  "author": "Tyler Lombard",
+  "license": "APACHE 2.0",
+  "bugs": {
+    "url": "https://github.com/TLombard2/Saltybox/issues"
+  },
+  "homepage": "https://github.com/TLombard2/Saltybox#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "log4js": "^6.3.0",
+    "parse-json": "^5.2.0",
+    "playwright": "^1.13.1",
+    "request": "^2.88.2",
+    "sqlite3": "^5.0.2"
+  }
+}
