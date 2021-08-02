@@ -1,1 +1,2 @@
-Write up coming soon.
+HOW TO INSTALL:
+- Clone Saltybox to your computer
