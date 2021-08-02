@@ -219,17 +219,28 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 			let matchTime = new Date().toLocaleString(); 
 			redBets = parseInt(redBets.replace(/,/g, ""));
 			blueBets = parseInt(blueBets.replace(/,/g, ""));
+			console.log(rowCount);
 
 			let rowCheck = '';
 			db.all('SELECT * FROM matchTable WHERE rowid = (?)', [rowCount], function(err, rows2) {
 				if (err) {
 					log.message('15: ' + err.message, "error");
 				} else {
-					if (rows2[0].redFighter == null) {
+					if (rowCount == 0) {
+						db.run('INSERT INTO matchTable VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [redFighter, blueFighter, redBets, blueBets, winner, matchType, matchTime, 'Bot Offline', 'Bot Offline'], function(err) {
+							if (err) {
+								log.message('16: ' + err.message, "error");
+							} else {
+								log.message('Match has been saved to the database!', "info");
+							}
+						});
+						return;
+					} else if (rows2[0].redFighter == null) {
 						rowCheck = true;
 					} else {
 						rowCheck = false;
 					}
+
 					if (rowCheck == false) {
 						db.run('INSERT INTO matchTable VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [redFighter, blueFighter, redBets, blueBets, winner, matchType, matchTime, 'Bot Offline', 'Bot Offline'], function(err) {
 							if (err) {
@@ -238,7 +249,7 @@ function addMatch(redFighter, blueFighter, redBets, blueBets, winner) {
 								log.message('Match has been saved to the database!', "info");
 							}
 						});
-					} else {
+					} else if (rowCheck == true) {
 						db.run('UPDATE matchTable SET redFighter = (?), blueFighter = (?), redBets = (?), blueBets = (?), matchWinner = (?), matchType = (?), matchTime = (?) WHERE rowid = (?)', 
 						[redFighter, blueFighter, redBets, blueBets, winner, matchType, matchTime, rowCount], function(err) {
 							if (err) {
