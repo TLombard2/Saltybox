@@ -16,6 +16,7 @@
   "homepage": "https://github.com/TLombard2/Saltybox#readme",
   "dependencies": {
     "dotenv": "^10.0.0",
+    "express": "^4.17.1",
     "log4js": "^6.3.0",
     "parse-json": "^5.2.0",
     "playwright": "^1.13.1",
