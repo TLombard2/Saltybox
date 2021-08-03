@@ -3,15 +3,7 @@ const sqlite3 = require('sqlite3');
 const resolve = require('path').resolve;
 const ejs = require('ejs');
 const router = express();
-const { JSDOM } = require( "jsdom" );
-const { window } = new JSDOM( "" );
-const $ = require( "jquery" )( window );
-var dt = require('datatables.net');
-
-
-
-
-
+const fs = require('fs')
 
 var data = [];
 
@@ -27,42 +19,13 @@ db.all('SELECT * FROM fighterTable', (err,rows) => {
 })
 
 function send(data) {
-    let nameRow = data.map( (value) => {
-        return value.name;
-    })
-    let winsRow = data.map( (value) => {
-        return value.wins;
-    })
-    let lossesRow = data.map( (value) => {
-        return value.losses;
-    })
-    let matchesRow = data.map( (value) => {
-        return value.matches;
-    })
-    let tournamentMatchWinsRow = data.map( (value) => {
-        return value.tournamentMatchWins;
-    })
-    let tournamentMatchLossesRow = data.map( (value) => {
-        return value.tournamentMatchLosses;
-    })
-    let tournamentMatchesRow = data.map( (value) => {
-        return value.tournamentMatches;
-    })
-    let tournamentFinalWinsRow = data.map( (value) => {
-        return value.tournamentFinalWins;
-    })
-    let favorRow = data.map( (value) => {
-        return value.favor;
-    })
-
     var filePath = resolve('./views/data'); //Obtains absolute path
+    var dataPath = resolve('./json/data.json');
     router.get('/', (req,res) => {
-        res.render(filePath, {data : {userQuery: req.params.userQuery, data}});
-    //createTable(nameRow, winsRow, lossesRow, matchesRow, tournamentMatchWinsRow, tournamentMatchLossesRow, tournamentMatchesRow, tournamentFinalWinsRow, favorRow);
-    }
-)}
-
-
-
+        res.render(filePath)
+      let json = JSON.stringify(data);
+     fs.writeFileSync(dataPath, json);
+   })
+}
 
 module.exports = router;

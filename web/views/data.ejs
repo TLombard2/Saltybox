@@ -1,25 +1,42 @@
 <!doctype html>
 <html>
 <head>
-    <title>Data</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saltybox: Data</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="http://localhost:61117/css/fighterTable.min.css">
     <script type="text/javascript" language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="http://localhost:61117/json/data.json"></script>
     <script>
-      $(document).ready( function () {
-        $('#dataTable')
-            .addClass( 'nowrap' )
-            .dataTable( {
-                columnDefs: [
-                    { targets: [-1, -3], className: 'dt-body-right' }
-                ]
-            } );
-      } );
+        $(document).ready( function () {
+          $('#dataTable')
+          .dataTable ({
+            "ajax": {
+              "url": "json/data.json",   
+              "dataSrc": ""
+            },
+            "columns": [
+              {"data": "name"},
+              {"data": "wins"},
+              {"data": "losses"},
+              {"data": "matches"},
+              {"data": "tournamentMatchWins"},
+              {"data": "tournamentMatchLosses"},
+              {"data": "tournamentMatches"},
+              {"data": "tournamentFinalWins"},
+              {"data": "favor"}
+            ],
+            "pageLength": 25
+          });
+        });
    </script>
     
 </head>
 <body>
-    <table id="dataTable">
+  <h1>Fighter Database</h1>
+    <table id="dataTable" class="cell-border hover order-column" style="width: 100%;" role="grid">
       <thead>
         <tr>
           <th>Fighter</th>
@@ -33,20 +50,7 @@
           <th>Favor</th>
         </tr>
       </thead>
-      <tbody>
-        <% data.data.forEach(result=>{ %>
-          <tr>
-            <td> <%= result.name %> </td>
-            <td> <%= result.wins %> </td>
-            <td> <%= result.losses %> </td>
-            <td> <%= result.matches %> </td>
-            <td> <%= result.tournamentMatchWins %> </td>
-            <td> <%= result.tournamentMatchLosses %> </td>
-            <td> <%= result.tournamentMatches %> </td>
-            <td> <%= result.tournamentFinalWins %> </td>
-            <td> <%= result.favor %> </td>
-            <% }); %>
-          </tr>
+      <tbody>  
       </tbody>
       </table>
 </body>
