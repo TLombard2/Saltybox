@@ -15,7 +15,10 @@
   },
   "homepage": "https://github.com/TLombard2/Saltybox#readme",
   "dependencies": {
+    "datatables.net": "^1.10.25",
+    "datatables.net-dt": "^1.1.0",
     "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
     "express": "^4.17.1",
     "log4js": "^6.3.0",
     "parse-json": "^5.2.0",
