@@ -3,6 +3,15 @@ const sqlite3 = require('sqlite3');
 const resolve = require('path').resolve;
 const ejs = require('ejs');
 const router = express();
+const { JSDOM } = require( "jsdom" );
+const { window } = new JSDOM( "" );
+const $ = require( "jquery" )( window );
+var dt = require('datatables.net');
+
+
+
+
+
 
 var data = [];
 
@@ -52,6 +61,7 @@ function send(data) {
     //createTable(nameRow, winsRow, lossesRow, matchesRow, tournamentMatchWinsRow, tournamentMatchLossesRow, tournamentMatchesRow, tournamentFinalWinsRow, favorRow);
     }
 )}
+
 
 
 

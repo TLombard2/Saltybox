@@ -2,9 +2,25 @@
 <html>
 <head>
     <title>Data</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <script type="text/javascript" language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script>
+      $(document).ready( function () {
+        $('#dataTable')
+            .addClass( 'nowrap' )
+            .dataTable( {
+                columnDefs: [
+                    { targets: [-1, -3], className: 'dt-body-right' }
+                ]
+            } );
+      } );
+   </script>
+    
 </head>
 <body>
     <table id="dataTable">
+      <thead>
         <tr>
           <th>Fighter</th>
           <th>Wins</th>
@@ -16,7 +32,8 @@
           <th>Tournament Final Wins</th>
           <th>Favor</th>
         </tr>
-        
+      </thead>
+      <tbody>
         <% data.data.forEach(result=>{ %>
           <tr>
             <td> <%= result.name %> </td>
@@ -30,9 +47,7 @@
             <td> <%= result.favor %> </td>
             <% }); %>
           </tr>
-          
-          
-        
+      </tbody>
       </table>
 </body>
 </html>
