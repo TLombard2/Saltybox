@@ -2,7 +2,9 @@
   "name": "saltybox",
   "version": "1.0.2",
   "description": "A webscraper and betting bot for Saltybet.com",
-  "scripts": {},
+  "scripts": {
+    "start": "node app.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TLombard2/Saltybox.git"
@@ -20,6 +22,7 @@
     "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
+    "greenlock-express": "^4.0.3",
     "log4js": "^6.3.0",
     "parse-json": "^5.2.0",
     "playwright": "^1.13.1",

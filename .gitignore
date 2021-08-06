@@ -2,3 +2,5 @@ log.txt
 saltydb.db
 .env
 node_modules
+cert.pem
+key.pem
