@@ -3,10 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saltybox: Home</title>
+    <title>Saltybox</title>
+    <style>
+        html, body {padding: 0 0 0 0; height: 100%;}
+        li {display: inline;}
+        * {box-sizing: border-box;}
+    </style>
 </head>
 <body>
-    <h1>Hello World!</h1>
-    <p>This is my first webpage!</p>
+    <div id="navbar">
+        <ul id="navlinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="/data">Data</a></li>
+        </ul>
+</div>
+<div id="stream">
+<iframe
+    src="https://player.twitch.tv/?channel=saltybet&parent=saltybox.business"
+    height="100%"
+    width="100%"
+    theme="dark"
+    allowfullscreen="<allowfullscreen>">
+</iframe>
+</div>
+<div id="chat">
+<iframe 
+    src="https://www.twitch.tv/embed/saltybet/chat?darkpopout&parent=saltybox.business"
+    height="100%"
+    theme="dark"
+    width="100%">
+</iframe>
+</div>
 </body>
 </html>

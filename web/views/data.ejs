@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saltybox: Data</title>
+    <title>Saltybox</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="http://localhost:61117/css/fighterTable.min.css">
     <script type="text/javascript" language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" language="javascript" src="http://localhost:61117/json/data.json"></script>
     <script>
         $(document).ready( function () {
           $('#dataTable')
@@ -28,13 +26,22 @@
               {"data": "tournamentFinalWins"},
               {"data": "favor"}
             ],
-            "pageLength": 25
+            "pageLength": 25,
+            "deferRender": true
           });
         });
    </script>
-    
+    <style>
+      li {display: inline;}
+    </style>
 </head>
 <body>
+    <div id="navbar">
+        <ul id="navlinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="/data">Data</a></li>
+        </ul>
+    </div>
   <h1>Fighter Database</h1>
     <table id="dataTable" class="cell-border hover order-column" style="width: 100%;" role="grid">
       <thead>
