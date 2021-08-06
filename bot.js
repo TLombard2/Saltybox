@@ -500,9 +500,17 @@ function setMatchType() {
     (matchCheck.indexOf('Matchmaking mode will be activated after the next exhibition match!') != -1) ||
     (matchCheck.indexOf('100 more matches until the next tournament!') != -1 && (matchStatus == 'redWon' || matchStatus == 'blueWon'))) {
         matchType = 'Exhibition';
+        refreshBrowser();
     }
 }
 
+
+function refreshBrowser() {
+    if (hasLoggedIn == true && (matchCheck.indexOf('25 exhibition matches left!') != -1 && matchStatus == 'open')) { //If the browser is open and it is the first match of exhibitions.
+        browser.close(); 
+        hasLoggedIn = false; //Next time the bot predicts a winner a new browser will be opened.
+    }
+}
 
 
 function setMatchStatus() {
