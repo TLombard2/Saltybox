@@ -2,7 +2,7 @@ const request = require('request');
 const sqlite3 = require('sqlite3').verbose();
 const log = require('./log');
 const parseJson = require('parse-json');
-const {chromium} = require('playwright');
+const {chromium} = require('playwright-chromium');
 require('dotenv').config();
 
 var db = new sqlite3.Database('saltydb.db');
