@@ -470,14 +470,16 @@ function whenBlueWins() {
     }
 }
 
-async function betCalc(salt) {
+function betCalc(salt) {
     if (salt < 250) {
         return '100'
     } else if (salt <= 10000 && salt >= 250) {
         return '250';
-    } else {
+    } else if (salt <= 10000000 && salt > 10000){
         let calc = (salt*.025);   
         return Math.round(calc).toString();
+    } else if (salt > 10000000) {
+        return '250000';
     }
 }
 
