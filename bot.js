@@ -470,7 +470,7 @@ function whenBlueWins() {
     }
 }
 
-async function betCalc(salt) {
+function betCalc(salt) {
     if (salt < 250) {
         return '100'
     } else if (salt <= 10000 && salt >= 250) {
