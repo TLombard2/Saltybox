@@ -2,7 +2,6 @@ const http = require('http')
 const https = require('https')
 const express = require('express');
 const resolve = require('path').resolve;
-const ejs = require('ejs');
 const app = express();
 const fs = require('fs')
 
@@ -18,11 +17,17 @@ app.get('/', (req,res) => { //Will load default page
     res.render(filePath);
 })
 
-const dataRouter = require('./routes/data'); //Will load /data
-app.use('/data', dataRouter);
+const fighterDataRouter = require('./routes/fighterdata.js'); //Will load /fighterdata
+app.use('/fighterdata', fighterDataRouter);
 
-const jsonDataRouter = require('./routes/datajson'); //Will load /json/data.json
-app.use('/json/data.json', jsonDataRouter);
+const matchDataRouter = require('./routes/matchdata.js'); //Will load /matchdata
+app.use('/matchdata', matchDataRouter);
+
+const jsonDataRouter1 = require('./routes/raw1.js'); //Will load /raw.json
+app.use('/raw1.json', jsonDataRouter1);
+
+const jsonDataRouter2 = require('./routes/raw2.js'); //Will load /raw2.json
+app.use('/raw2.json', jsonDataRouter2);
 
 
 http.createServer(app).listen(80, () => {

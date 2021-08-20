@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saltybox</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+    <script type="text/javascript" language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready( function () {
+          $('#dataTable')
+          .dataTable ({
+            "ajax": {
+              "url": "/raw2.json",   
+              "dataSrc": ""
+            },
+            "columns": [
+              {"data": "redFighter"},
+              {"data": "blueFighter"},
+              {"data": "redBets"},
+              {"data": "blueBets"},
+              {"data": "matchWinner"},
+              {"data": "matchType"},
+              {"data": "matchTime"},
+              {"data": "prediction"},
+              {"data": "saltWon"}
+            ],
+            "pageLength": 25,
+            "deferRender": true
+          });
+        });
+   </script>
+    <style>
+      li {display: inline;}
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <ul id="navlinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="/fighterdata">Fighter Data</a></li>
+            <li><a href="/matchdata">Match Data</a></li>
+        </ul>
+    </div>
+  <h1>Match Database</h1>
+    <table id="dataTable" class="cell-border hover order-column" style="width: 100%;" role="grid">
+      <thead>
+        <tr>
+          <th>Red Fighter</th>
+          <th>Blue Fighter</th>
+          <th>Red Bets</th>
+          <th>Blue Bets</th>
+          <th>Winner</th>
+          <th>Type</th>
+          <th>Date & Time</th>
+          <th>Prediction</th>
+          <th>Salt</th>
+        </tr>
+      </thead>
+      <tbody>  
+      </tbody>
+      </table>
+</body>
+</html>
