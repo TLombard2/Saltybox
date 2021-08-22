@@ -1,0 +1,177 @@
+/*
+Global
+*/
+
+html, body {
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-color: #463F3A;
+    font-family: Tahoma, sans-serif;
+    overflow: auto;
+}
+
+h1 {
+    color: black;
+}
+
+.redtext {
+    color: lightcoral !important;
+}
+
+.bluetext {
+    color: lightblue !important;
+}
+
+.goldtext {
+    color: #BFAB25 !important;
+}
+
+/*
+Tables
+*/
+.table-bordered {
+    color: black;
+    border-color: black;
+}
+
+.table>tbody>tr {
+    background-color: #463F3A;
+}
+
+th {
+    font-size: medium;
+    font-weight: bold;
+}
+
+td {
+    font-size: medium;
+}
+
+.table>thead>tr>th, .table>tbody>tr>td {
+    color: black;
+    border-color: black;
+    padding: 3px;
+}
+
+.table>tbody>tr:hover {
+    background-color: #9882AC;
+}
+
+label {
+    color: black;
+    font-weight: bold!important;
+}
+
+.form-control {
+    background-color: #38322E;
+    border-color: black;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #9882AC;
+}
+
+.dataTables_info {
+    color: black;
+}
+
+.paginate_button>a {
+    color: black!important;
+    background-color: #38322E!important;
+    border-color: black!important;
+}
+
+.paginate_button>a:hover {
+    background: linear-gradient(to bottom, #463F3A 0%, #9882AC 100%)
+}
+
+.paginate_button.active>a  {
+    background-color: #463F3A!important; 
+    background: linear-gradient(to bottom, #463F3A 0%, #9882AC 100%)
+}
+
+.paginate_button>a:focus {
+    outline: none;
+}
+
+/*
+Navbar
+*/
+
+.navbar {
+    margin: 0px;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+    border-bottom: 1px solid #BFAB25;
+    background-color: #38322E;
+    font-weight: bold;
+}
+
+.navbar-default .navbar-brand {
+    color: black;
+}
+
+.navbar-default .navbar-brand:hover {
+    color: #9882AC;
+}
+
+.navbar-default .navbar-nav>.active>a {
+    color: black;
+    background: linear-gradient(to bottom, #463F3A 0%, #9882AC 100%);
+}
+
+.navbar-default .navbar-nav>.active>a:hover {
+    color: black;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: black;
+    background-color: #38322E;
+}
+
+.navbar-default .navbar-nav>li>a:hover {
+    color: black;
+    background: linear-gradient(to bottom, #463F3A 0%, #9882AC 100%)!important;
+}
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form, .navbar-default .navbar-toggle  {
+    border-color: black;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: black;
+}
+
+.navbar-default .navbar-toggle:hover {
+    background-color: #463F3A;
+}
+
+/*
+Index
+*/
+
+#stream {
+    padding: 0px;
+    height: 80vh;
+}
+#chat, #botdata {
+    padding: 0px;
+    height: 90vh;
+}
+
+/*
+Fighter Data
+*/
+
+
+
+/*
+Match History
+*/
+
+

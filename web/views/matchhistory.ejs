@@ -16,22 +16,23 @@
           $('#dataTable')
           .dataTable ({
             "ajax": {
-              "url": "/raw1.json",   
+              "url": "/raw2.json",   
               "dataSrc": ""
             },
             "columns": [
-              {"data": "name"},
-              {"data": "wins"},
-              {"data": "losses"},
-              {"data": "matches"},
-              {"data": "tournamentMatchWins"},
-              {"data": "tournamentMatchLosses"},
-              {"data": "tournamentMatches"},
-              {"data": "tournamentFinalWins"},
-              {"data": "favor"}
+              {"data": "redFighter"},
+              {"data": "blueFighter"},
+              {"data": "redBets"},
+              {"data": "blueBets"},
+              {"data": "matchWinner"},
+              {"data": "matchType"},
+              {"data": "matchTime"},
+              {"data": "prediction"},
+              {"data": "saltWon"}
             ],
             "pageLength": 25,
             "lengthChange": false,
+            "order": [[6, 'desc']],
             "deferRender": true
           });
 
@@ -49,7 +50,7 @@
       <nav class="navbar navbar-default">
           <div class="container-fluid">
               <div class="navbar-header">
-                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                  <button title="navigation-menu" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
                       <span class="icon-bar"></span>
                       <span class="icon-bar"></span>
                       <span class="icon-bar"></span>
@@ -59,33 +60,31 @@
               <div id="navbar" class="collapse navbar-collapse">
                   <ul class="nav navbar-nav">
                       <li><a href="/">Home</a></li>
-                      <li class="active"><a href="/fighterdata">Fighter Data</a></li>
-                      <li><a href="/matchhistory">Match History</a></li>
+                      <li><a href="/fighterdata">Fighter Data</a></li>
+                      <li class="active"><a href="/matchhistory">Match History</a></li>
                   </ul>
               </div>
           </div>
-      </nav>
+        </nav>
       <div class="container-fluid">
         <div class="row">
-          <div class="col-sm-12">
-            <h1>Fighter Data</h1>
-          </div>
           <div id="table" class="col-sm-12">
+            <h1>Match History</h1>
             <table id="dataTable" class="table table-bordered table-hover table-reponsive" role="grid">
               <thead>
                 <tr>
-                  <th>Fighter</th>
-                  <th>Wins</th>
-                  <th>Losses</th>
-                  <th>Matches</th>
-                  <th>Tournament Wins</th>
-                  <th>Tournament Losses</th>
-                  <th>Tournament Matches</th>
-                  <th>Tournament Final Wins</th>
-                  <th>Favor</th>
+                  <th class="redtext">Red Fighter</th>
+                  <th class="bluetext">Blue Fighter</th>
+                  <th class="redtext">Red Bets</th>
+                  <th class="bluetext">Blue Bets</th>
+                  <th>Winner</th>
+                  <th>Type</th>
+                  <th>Date & Time</th>
+                  <th>Prediction</th>
+                  <th class="goldtext">Salt</th>
                 </tr>
               </thead>
-              <tbody>  
+              <tbody>
               </tbody>
             </table>
           </div>

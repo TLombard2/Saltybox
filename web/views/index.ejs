@@ -1,39 +1,68 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saltybox</title>
-    <style>
-        html, body {padding: 0 0 0 0; height: 100%;}
-        li {display: inline;}
-        * {box-sizing: border-box;}
-    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <div id="navbar">
-        <ul id="navlinks">
-            <li><a href="/">Home</a></li>
-            <li><a href="/fighterdata">Fighter Data</a></li>
-            <li><a href="/matchdata">Match Data</a></li>
-        </ul>
-</div>
-<div id="stream">
-<iframe
-    src="https://player.twitch.tv/?channel=saltybet&parent=saltybox.business"
-    height="100%"
-    width="100%"
-    theme="dark"
-    allowfullscreen="<allowfullscreen>">
-</iframe>
-</div>
-<div id="chat">
-<iframe 
-    src="https://www.twitch.tv/embed/saltybet/chat?darkpopout&parent=saltybox.business"
-    height="100%"
-    theme="dark"
-    width="100%">
-</iframe>
-</div>
+    <div id="wrapper">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Saltybox</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="/">Home</a></li>
+                        <li><a href="/fighterdata">Fighter Data</a></li>
+                        <li><a href="/matchhistory">Match History</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container-fluid">
+            <div class="row">
+                <div id="botdata" class="col-md-3 col-sm-12">
+                    <p>Test</p>
+                </div>
+                    <div id="stream" class="col-md-6 col-sm-12">
+                    <iframe
+                        src="https://player.twitch.tv/?channel=saltybet&parent=saltybox.business"
+                        frameborder="0"
+                        height="100%"
+                        width="100%"
+                        theme="dark"
+                        allowfullscreen="<allowfullscreen>">
+                    </iframe>
+                    </div>
+                <div id="chat" class="col-md-3 col-sm-12">
+                    <iframe 
+                        src="https://www.twitch.tv/embed/saltybet/chat?darkpopout&parent=saltybox.business"
+                        frameborder="0"
+                        height="100%"
+                        width="100%"
+                        theme="dark"
+                        >
+                    </iframe>
+                </div>
+            </div>
+            <div class="row">
+                <div id="empty" class="col-sm-3"></div>
+                <div id="matchinfo" class="col-sm-6">
+                    <p>Test</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
