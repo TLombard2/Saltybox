@@ -4,38 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saltybox</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="./styles.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
     <div id="wrapper">
-        <nav class="navbar navbar-default">
+        <nav class="navbar navbar-expand-sm navbar-light">
             <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="/">Saltybox</a>
-                </div>
-                <div id="navbar" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="/">Home</a></li>
-                        <li><a href="/fighterdata">Fighter Data</a></li>
-                        <li><a href="/matchhistory">Match History</a></li>
+                <a class="navbar-brand" href="/">Saltybox</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbar" >
+                    <ul class="navbar-nav">
+                        <li class="nav-item active"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/fighterdata">Fighter Data</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/matchhistory">Match History</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
         <div class="container-fluid">
             <div class="row">
-                <div id="botdata" class="col-md-3 col-sm-12">
+                <div id="botdata" class="col-md-3 col-xs-12">
                     <p>Test</p>
                 </div>
-                    <div id="stream" class="col-md-6 col-sm-12">
+                    <div id="matchinfo" class="d-block d-md-none col-xs-12">
+                        <p>Test</p>
+                    </div>
+                    <div id="stream" class="col-md-6 col-xs-12">
                     <iframe
                         src="https://player.twitch.tv/?channel=saltybet&parent=saltybox.business"
                         frameborder="0"
@@ -45,7 +43,7 @@
                         allowfullscreen="<allowfullscreen>">
                     </iframe>
                     </div>
-                <div id="chat" class="col-md-3 col-sm-12">
+                <div id="chat" class="col-md-3 col-xs-12">
                     <iframe 
                         src="https://www.twitch.tv/embed/saltybet/chat?darkpopout&parent=saltybox.business"
                         frameborder="0"
@@ -57,12 +55,13 @@
                 </div>
             </div>
             <div class="row">
-                <div id="empty" class="col-sm-3"></div>
-                <div id="matchinfo" class="col-sm-6">
+                <div class="empty col-md-3 col-xs-12"></div>
+                <div id="matchinfo" class="d-none d-lg-block col-md-6 col-xs-12">
                     <p>Test</p>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>

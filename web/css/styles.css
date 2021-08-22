@@ -17,6 +17,10 @@ h1 {
     color: black;
 }
 
+p {
+    color: black;
+}
+
 .redtext {
     color: lightcoral !important;
 }
@@ -72,6 +76,7 @@ label {
 
 .form-control:focus {
     box-shadow: none;
+    background-color: #38322E;
     border-color: #9882AC;
 }
 
@@ -104,6 +109,7 @@ Navbar
 
 .navbar {
     margin: 0px;
+    padding: 0px;
     border-top: 0px;
     border-left: 0px;
     border-right: 0px;
@@ -112,44 +118,46 @@ Navbar
     font-weight: bold;
 }
 
-.navbar-default .navbar-brand {
+.navbar-light .navbar-brand {
     color: black;
 }
 
-.navbar-default .navbar-brand:hover {
+.navbar-light .navbar-brand:hover {
     color: #9882AC;
 }
 
-.navbar-default .navbar-nav>.active>a {
+.navbar-light .navbar-nav>.active>a {
     color: black;
     background: linear-gradient(to bottom, #463F3A 0%, #9882AC 100%);
 }
 
-.navbar-default .navbar-nav>.active>a:hover {
+.navbar-light .navbar-nav>.active>a:hover {
     color: black;
 }
 
-.navbar-default .navbar-nav>li>a {
+.navbar-light .navbar-nav .nav-link {
     color: black;
     background-color: #38322E;
 }
 
-.navbar-default .navbar-nav>li>a:hover {
+.navbar-light .navbar-nav .nav-link:hover {
     color: black;
     background: linear-gradient(to bottom, #463F3A 0%, #9882AC 100%)!important;
 }
 
-.navbar-default .navbar-collapse, .navbar-default .navbar-form, .navbar-default .navbar-toggle  {
+.navbar-light .navbar-toggler  {
     border-color: black;
 }
 
-.navbar-default .navbar-toggle .icon-bar {
-    background-color: black;
+.navbar-light .navbar-toggler:focus {
+    outline: none;
+    box-shadow: none;
 }
 
-.navbar-default .navbar-toggle:hover {
+.navbar-light .navbar-toggler:hover {
     background-color: #463F3A;
 }
+
 
 /*
 Index
@@ -157,11 +165,17 @@ Index
 
 #stream {
     padding: 0px;
-    height: 80vh;
+    height: 85vh;
 }
-#chat, #botdata {
+
+#botdata {
+    padding: 15px;
+    height: 85vh;
+}
+
+#chat {
     padding: 0px;
-    height: 90vh;
+    height: 85vh;
 }
 
 /*
