@@ -1,17 +1,16 @@
 const express = require('express');
-const sqlite3 = require('sqlite3');
 const resolve = require('path').resolve;
 const router = express();
 const fs = require('fs')
 
 var filePath= resolve('./json/fighterdata.json'); //Obtains absolute path
+
+router.get('/', (req, res) => {
     fs.readFile(filePath, "utf8", (err, data) => {
-    router.get('/', (req, res) => {
-        try {
         data = JSON.parse(data);
-        }catch {
-            //do nothing lul
-        }
+        res.set('Cache-Control', 'no-cache');
+        res.set('X-Content-Type-Options', 'nosniff');
+        res.removeHeader('x-powered-by');
         res.send(data);
     })
 });

@@ -12,7 +12,7 @@ getData();
 setInterval(getData, 3000);
 
 function getData() {
-    db.all('SELECT * FROM fighterTable', (err,rows) => {
+    db.all('SELECT * FROM matchTable', (err,rows) => {
         if (err) {
             log.message('1: ' + err);
         } else {
@@ -23,8 +23,8 @@ function getData() {
 }
 
 function send(data) {
-    var filePath = resolve('./views/fighterdata.ejs'); //Obtains absolute path
-    var dataPath = resolve('./json/fighterdata.json');
+    var filePath = resolve('./views/matchhistory.ejs'); //Obtains absolute path
+    var dataPath = resolve('./json/matchhistory.json');
     let json = JSON.stringify(data);
     fs.writeFileSync(dataPath, json);
     router.get('/', (req,res) => {
